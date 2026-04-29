@@ -1,5 +1,4 @@
 `timescale 1ns / 1ps
-
 module RV32I_tb;
 
     logic        clk;

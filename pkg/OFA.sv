@@ -1,5 +1,30 @@
-package FUNCT3_pkg;
+package OFA_pkg;
 
+// OPCODE
+
+// R-type
+    localparam OPCODE_REG  = 7'b0110011;
+     
+     // I - type
+     localparam OPCODE_IMM  = 7'b0010011;
+     localparam OPCODE_LOAD   = 7'b0000011;
+     localparam OPCODE_JALR   = 7'b1100111;
+     localparam OPCODE_SYSTEM   = 7'b1110011;
+
+     // S - type
+     localparam OPCODE_STORE  = 7'b0100011;
+     
+     // B - type 
+     localparam OPCODE_BRANCH = 7'b1100011;
+     
+     // J - type
+     localparam OPCODE_JAL    = 7'b1101111;
+     
+     // U - type
+     localparam OPCODE_LUI     = 7'b0110111;
+     localparam OPCODE_AUIPC   = 7'b0010111; 
+
+// FUNCT
 // Branch - type opcode = 110 0011
     localparam FUNCT3_B_BEQ     = 3'b000;
     localparam FUNCT3_B_BNE     = 3'b001;
@@ -45,5 +70,18 @@ package FUNCT3_pkg;
   localparam FUNCT3_I_ORI   = 3'b110;
   localparam FUNCT3_I_ANDI  = 3'b111;
    
-
+// ALU
+    localparam ALU_CODE_ADD	  =  4'b0000;
+    localparam ALU_CODE_SUB	  =  4'b0001;
+    localparam ALU_CODE_AND	  =  4'b0010;
+    localparam ALU_CODE_OR	  =  4'b0011;
+    localparam ALU_CODE_XOR	  =  4'b0100;
+    localparam ALU_CODE_SLT	  =  4'b0101;
+    localparam ALU_CODE_SLTU  =  4'b0110;
+    localparam ALU_CODE_SLL	  =  4'b0111;
+    localparam ALU_CODE_SRL	  =  4'b1000;
+    localparam ALU_CODE_SRA	  =  4'b1001;
+    localparam ALU_CODE_PASS  =  4'b1010;
+    localparam ALU_CODE_NOP   =  4'b1111;
+  
 endpackage

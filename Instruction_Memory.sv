@@ -1,6 +1,3 @@
-`timescale 1ns / 1ps
-// // (* keep_hierarchy = "yes" *)
-// // (* dont_touch = "yes" *)
 module Instruction_Memory #(
     parameter SIZE = 1024 
 )(
@@ -16,7 +13,7 @@ module Instruction_Memory #(
     assign instruction = mem[index];
 
     initial begin
-    $readmemh("program.hex", mem);
+    $readmemh("init/instr_mem/program.hex", mem);
     end
 
 endmodule

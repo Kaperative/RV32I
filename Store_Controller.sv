@@ -1,11 +1,11 @@
-`timescale 1ns / 1ps
-import FUNCT3_pkg::*;
-// // (* keep_hierarchy = "yes" *)
-// // (* dont_touch = "yes" *)
+// переписать под assign блоки
+// как-то вынести funct3 отсюда и передавать только управляющий сигнал от UC
+
+import OFA_pkg::*;
 module Store_Controller (
     input  logic [31:0] Address,
     input  logic [31:0] WriteDataRaw,
-    input  logic [2:0]  funct3,
+    input  logic [2:0]  funct3, // ---
     input  logic        MemWrite,
     
     output logic [31:0] WriteData,
@@ -36,7 +36,7 @@ module Store_Controller (
                         end
                     endcase
                 end
-                
+                // либо первый байт либо полуслово протеститровать
              
                 FUNCT3_S_SH: begin
                     if (Address[1]) begin

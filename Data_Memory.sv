@@ -1,6 +1,4 @@
-`timescale 1ns / 1ps
-// // (* keep_hierarchy = "yes" *)
-// // (* dont_touch = "yes" *)
+
 module Data_Memory #(
     parameter SIZE = 1024,             
     parameter ADDR_WIDTH = 32
@@ -20,20 +18,13 @@ module Data_Memory #(
     logic [31:0] word_addr ;
     logic [9:0]  index;
 
-
     assign word_addr = Address >> 2;
     assign index     = word_addr[9:0];
 
     always_comb begin
-
-        if (MemRead) begin
-            ReadData = mem[index];
-        end else begin
-            ReadData = 32'b0;
-        end
+        ReadData = mem[index];
     end
     
-
     always_ff @(posedge clk) begin
         if (MemWrite) begin
             if (WriteMask[0]) mem[index][7:0]   <= WriteData[7:0];
@@ -45,7 +36,8 @@ module Data_Memory #(
 
 initial begin
 
-    $readmemh("data_mem.hex", mem);
+
+    $readmemh("init/data_mem/data_mem.hex", mem);
     $display("Data Memory loaded:");
     for (int i = 0; i < 4; i++) begin
         $display("  mem[%0d] = 0x%h", i, mem[i]);

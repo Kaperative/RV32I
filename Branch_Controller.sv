@@ -1,9 +1,11 @@
-`timescale 1ns / 1ps
-import FUNCT3_pkg::*;
-// // (* keep_hierarchy = "yes" *)
-// // (* dont_touch = "yes" *)
+// переписать под assign блоки
+// как-то вынести funct3 отсюда и передавать только управляющий сигнал от UC
+// возможно вынести extraction в ALU
+
+import OFA_pkg::*;
 module Branch_Controller (
     input  logic        Branch,
+
     input  logic        Zero,
     input  logic        Negative,
     input  logic        Overflow,
@@ -15,11 +17,19 @@ module Branch_Controller (
 
     logic less_than_signed;
     logic less_than_unsigned;
-
+    logic is_BEQ, is_BNE, is_BLT, is_BGE, is_BLTU, is_BGEU;
 
     assign less_than_signed = Negative ^ Overflow;
 
     assign less_than_unsigned = ~Carry;
+
+    assign is_BEQ   =   Branch & (funct3 == FUNCT3_B_BEQ);
+    assign is_BNE   =   Branch & (funct3 == FUNCT3_B_BEQ);
+    assign is_BLT   =   Branch & (funct3 == FUNCT3_B_BEQ);
+    assign is_BGE   =   Branch & (funct3 == FUNCT3_B_BEQ);
+    assign is_BLTU  =   Branch & (funct3 == FUNCT3_B_BEQ);
+    assign is_BGEU  =   Branch & (funct3 == FUNCT3_B_BEQ);
+  
 
     always_comb begin
         if (Branch) begin

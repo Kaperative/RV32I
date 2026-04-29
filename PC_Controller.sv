@@ -28,6 +28,7 @@ module PC_Controller (
         end else begin
             PC_next = PC_Plus_4;       
         end
+        // assign
     end
 
 endmodule

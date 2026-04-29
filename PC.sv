@@ -1,6 +1,3 @@
-`timescale 1ns / 1ps
-// // (* keep_hierarchy = "yes" *)
-// // (* dont_touch = "yes" *)
 module PC #( parameter WIDTH = 32)   
 (
 input  logic        clk,        

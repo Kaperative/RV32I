@@ -1,11 +1,11 @@
-`timescale 1ns / 1ps
-import FUNCT3_pkg::*;
-// // (* keep_hierarchy = "yes" *)
-// // (* dont_touch = "yes" *)
+// переписать под assign блоки
+// как-то вынести funct3 отсюда и передавать только управляющий сигнал от UC
+
+import OFA_pkg::*;
 module Load_Controller (
     input  logic [31:0] Address,
     input  logic [31:0] ReadDataRaw, 
-    input  logic [2:0]  funct3,
+    input  logic [2:0]  funct3, // ----
     
     output logic [31:0] ReadData   
 );

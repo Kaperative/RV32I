@@ -1,7 +1,4 @@
-`timescale 1ns / 1ps
-import ALU_pkg::*;
-//// // (* keep_hierarchy = "yes" *)
-//// // (* dont_touch = "yes" *)
+import OFA_pkg::*;
 module ALU (
     input  logic [31:0] A,
     input  logic [31:0] B,
@@ -72,7 +69,7 @@ module ALU (
             ALU_CODE_XOR:  Result = logic_result;
             
             // LUI
-            ALU_CODE_PASS: Result = B;           
+            ALU_CODE_PASS: Result = B;    // подготовка константы производится в UC модуле       
             default:       Result = 32'b0;
         endcase
     end

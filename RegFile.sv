@@ -1,4 +1,3 @@
-
 module RegFile (
     input logic clk,
     input logic W_EN,
@@ -23,4 +22,5 @@ begin
         Reg_File[W_Addr] <= W_Data;
     end
 end
+
 endmodule
