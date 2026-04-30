@@ -14,7 +14,7 @@ module RV32I(
     logic [31:0] rd1, rd2, write_data, alu_a, alu_b, alu_result;
     logic [31:0] immediate, mem_read_data, mem_write_data, load_result;
     
-    logic [6:0]  opcode, funct7;
+    logic [6:0]  funct7;
     logic [4:0]  rs1, rs2, rd;
     logic [2:0]  funct3;
     logic [3:0]  alu_code;
@@ -22,7 +22,7 @@ module RV32I(
     logic        reg_write, alu_src_a, alu_src_b, mem_read, mem_write;
     logic        branch, jump, jump_reg, branch_taken;
     logic [3:0]  mem_write_mask;
-    logic alu_zero, alu_negative,   , alu_overflow;
+    logic alu_zero, alu_negative, alu_overflow;
     
     Instruction_Memory u_imem (
         .address     (pc),

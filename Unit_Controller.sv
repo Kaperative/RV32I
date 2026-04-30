@@ -42,6 +42,7 @@ logic[31:0]    Imm_I, Imm_S, Imm_B, Imm_J, Imm_U;
 logic          ALU_ADD, ALU_SUB, ALU_AND, ALU_XOR, ALU_OR, ALU_SLT, ALU_SLTU;
 logic          ALU_SLL ,ALU_SRL, ALU_SRA, ALU_PASS, ALU_NOP;
 
+
    // ID
    assign opcode        =     Instruction[6:0];
    assign rd            =     Instruction[11:7];
@@ -74,7 +75,7 @@ logic          ALU_SLL ,ALU_SRL, ALU_SRA, ALU_PASS, ALU_NOP;
    assign src_ALU_A     =     JAL_type  | AUIPC_type;
 
    assign src_ALU_B     =     IMM_type  | LOAD_type | STORE_type | JAL_type |
-                              JALR_type | AUIPC_type;
+                              JALR_type | AUIPC_type| LUI_type;
  
    assign src_W_Data_reg[0] = LOAD_type;
    assign src_W_Data_reg[1] = JAL_type  | JALR_type;
@@ -104,9 +105,10 @@ logic          ALU_SLL ,ALU_SRL, ALU_SRA, ALU_PASS, ALU_NOP;
                               Imm_Select_S ? Imm_S :
                               Imm_Select_B ? Imm_B :
                               Imm_Select_J ? Imm_J :
-                              Imm_Select_U ? Imm_U: 32'b0;
+                              Imm_Select_U ? Imm_U : 
+                              32'b0;
 
-    assign ALU_ADD          =   ((opcode == OPCODE_REG) & 
+   assign ALU_ADD          =   ((opcode == OPCODE_REG) & 
                                     ((funct3 == FUNCT3_R_ADDSUB) & (funct7 == 7'b0000000))) |
                                 ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_ADDI))) | 
@@ -116,69 +118,66 @@ logic          ALU_SLL ,ALU_SRL, ALU_SRA, ALU_PASS, ALU_NOP;
                                 (opcode == OPCODE_JALR)          |
                                 (opcode == OPCODE_AUIPC);
 
-    assign ALU_SUB          =    ((opcode == OPCODE_REG) & 
+   assign ALU_SUB          =    ((opcode == OPCODE_REG) & 
                                     ((funct3 == FUNCT3_R_ADDSUB) & (funct7 == 7'b0100000))) |             
                                  (opcode == OPCODE_BRANCH); 
 
-    assign ALU_AND          =    ((opcode == OPCODE_REG) & 
-                                    ((funct3 == FUNCT3_R_AND) & (funct7 == 7'b0000000))) |             
+   assign ALU_AND          =    ((opcode == OPCODE_REG) & 
+                                    ((funct3 == FUNCT3_R_AND)    & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_ANDI)));
                                 
-    assign ALU_XOR          =    ((opcode == OPCODE_REG) & 
-                                    ((funct3 == FUNCT3_R_XOR) & (funct7 == 7'b0000000))) |             
+   assign ALU_XOR          =    ((opcode == OPCODE_REG) & 
+                                    ((funct3 == FUNCT3_R_XOR)    & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_XORI)));
 
 
-    assign ALU_OR           =    ((opcode == OPCODE_REG) & 
-                                    ((funct3 == FUNCT3_R_OR) & (funct7 == 7'b0000000))) |             
+   assign ALU_OR           =    ((opcode == OPCODE_REG) & 
+                                    ((funct3 == FUNCT3_R_OR)   & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_ORI))); 
 
-    assign ALU_SLT          =    ((opcode == OPCODE_REG) & 
-                                    ((funct3 == FUNCT3_R_SLT) & (funct7 == 7'b0000000))) |             
+   assign ALU_SLT          =    ((opcode == OPCODE_REG) & 
+                                    ((funct3 == FUNCT3_R_SLT)  & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_SLTI)));  
 
-    assign ALU_SLTU         =    ((opcode == OPCODE_REG) & 
+   assign ALU_SLTU         =    ((opcode == OPCODE_REG) & 
                                     ((funct3 == FUNCT3_R_SLTU) & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_SLTIU)));
 
 
-    assign ALU_SLL         =    ((opcode == OPCODE_REG) & 
+   assign ALU_SLL         =    ((opcode == OPCODE_REG)  & 
                                     ((funct3 == FUNCT3_R_SLL) & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_SLLI)));      
 
-    assign ALU_SRL         =    ((opcode == OPCODE_REG) & 
-                                    ((funct3 == FUNCT3_R_SR) & (funct7 == 7'b0000000))) |             
+   assign ALU_SRL         =    ((opcode == OPCODE_REG)  & 
+                                    ((funct3 == FUNCT3_R_SR)   & (funct7 == 7'b0000000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_SRXI) & (funct7 == 7'b0000000)));
 
-    assign ALU_SRA         =    ((opcode == OPCODE_REG) & 
-                                    ((funct3 == FUNCT3_R_SR) & (funct7 == 7'b0100000))) |             
+   assign ALU_SRA         =    ((opcode == OPCODE_REG)  & 
+                                    ((funct3 == FUNCT3_R_SR)   & (funct7 == 7'b0100000))) |             
                                  ((opcode == OPCODE_IMM) & 
                                     ((funct3 == FUNCT3_I_SRXI) & (funct7 == 7'b0100000)));                                                                              
     
-    assign ALU_PASS        =    (opcode == OPCODE_LUI);                                                            
-    assign ALU_NOP         =    (opcode == OPCODE_SYSTEM);        
+   assign ALU_PASS        =    (opcode == OPCODE_LUI);                                                            
+   assign ALU_NOP         =    (opcode == OPCODE_SYSTEM);        
     
-assign ALU_code = ALU_ADD  ? ALU_CODE_ADD  :
-                      ALU_SUB  ? ALU_CODE_SUB  :
-                      ALU_AND  ? ALU_CODE_AND  :
-                      ALU_OR   ? ALU_CODE_OR   :
-                      ALU_XOR  ? ALU_CODE_XOR  :
-                      ALU_SLT  ? ALU_CODE_SLT  :
-                      ALU_SLTU ? ALU_CODE_SLTU :
-                      ALU_SLL  ? ALU_CODE_SLL  :
-                      ALU_SRL  ? ALU_CODE_SRL  :
-                      ALU_SRA  ? ALU_CODE_SRA  :
-                      ALU_PASS ? ALU_CODE_PASS : ALU_CODE_NOP;
+   assign ALU_code = ALU_ADD  ? ALU_CODE_ADD  :
+                        ALU_SUB  ? ALU_CODE_SUB  :
+                        ALU_AND  ? ALU_CODE_AND  :
+                        ALU_OR   ? ALU_CODE_OR   :
+                        ALU_XOR  ? ALU_CODE_XOR  :
+                        ALU_SLT  ? ALU_CODE_SLT  :
+                        ALU_SLTU ? ALU_CODE_SLTU :
+                        ALU_SLL  ? ALU_CODE_SLL  :
+                        ALU_SRL  ? ALU_CODE_SRL  :
+                        ALU_SRA  ? ALU_CODE_SRA  :
+                        ALU_PASS ? ALU_CODE_PASS : 
+                        ALU_CODE_NOP;
            
-   
-//assign add_instr = (funcy7 === xxx) & (funct3 == xxxx) & ; 
-//assign alu_op_reg = add | sb
-//assign alu_op_0 = 
 endmodule

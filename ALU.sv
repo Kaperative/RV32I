@@ -1,4 +1,5 @@
 import OFA_pkg::*;
+
 module ALU (
     input  logic [31:0] A,
     input  logic [31:0] B,
@@ -11,88 +12,50 @@ module ALU (
     output logic        Overflow
 );
 
-
-    logic [31:0] add_result;
-    logic [31:0] sub_result;
-    logic [31:0] shift_result;
-    logic [31:0] slt_result;
-    logic [31:0] sltu_result;
-    logic [31:0] logic_result;
-    
-    logic        add_carry;
-    logic        sub_carry;
-    logic        add_overflow;
-    logic        sub_overflow;
-
+    logic [31:0] add_result, sub_result;
+    logic        add_carry, sub_carry;
+    logic        add_overflow, sub_overflow;
 
     assign {add_carry, add_result} = {1'b0, A} + {1'b0, B};
     assign {sub_carry, sub_result} = {1'b0, A} + {1'b0, ~B} + 1'b1;
     
     assign add_overflow = (A[31] == B[31]) && (add_result[31] != A[31]);
     assign sub_overflow = (A[31] == ~B[31]) && (sub_result[31] != A[31]);
-    
 
-    always_comb begin
-        case (ALU_Code)
-            ALU_CODE_SLL: shift_result = A << B[4:0];
-            ALU_CODE_SRL: shift_result = A >> B[4:0];
-            ALU_CODE_SRA: shift_result = $signed(A) >>> B[4:0];
-            default:      shift_result = 32'b0;
-        endcase
-    end
-    
+    logic [31:0] sll_res, srl_res, sra_res;
+    assign sll_res = A << B[4:0];
+    assign srl_res = A >> B[4:0];
+    assign sra_res = $signed(A) >>> B[4:0];
 
-    assign slt_result  = {31'b0, sub_result[31] ^ sub_overflow};  
-    assign sltu_result = {31'b0, ~sub_carry};                     
+    logic [31:0] and_res, or_res, xor_res, slt_res, sltu_res;
+    assign and_res  = A & B;
+    assign or_res   = A | B;
+    assign xor_res  = A ^ B;
+    assign slt_res  = {31'b0, sub_result[31] ^ sub_overflow};
+    assign sltu_res = {31'b0, ~sub_carry};
 
-    always_comb begin
-        case (ALU_Code)
-            ALU_CODE_AND: logic_result = A & B;
-            ALU_CODE_OR:  logic_result = A | B;
-            ALU_CODE_XOR: logic_result = A ^ B;
-            default:      logic_result = 32'b0;
-        endcase
-    end
-    
+    assign Result = (ALU_Code == ALU_CODE_ADD)  ? add_result :
+                    (ALU_Code == ALU_CODE_SUB)  ? sub_result :
+                    (ALU_Code == ALU_CODE_SLL)  ? sll_res    :
+                    (ALU_Code == ALU_CODE_SRL)  ? srl_res    :
+                    (ALU_Code == ALU_CODE_SRA)  ? sra_res    :
+                    (ALU_Code == ALU_CODE_SLT)  ? slt_res    :
+                    (ALU_Code == ALU_CODE_SLTU) ? sltu_res   :
+                    (ALU_Code == ALU_CODE_AND)  ? and_res    :
+                    (ALU_Code == ALU_CODE_OR)   ? or_res     :
+                    (ALU_Code == ALU_CODE_XOR)  ? xor_res    :
+                    (ALU_Code == ALU_CODE_PASS) ? B          : 32'b0;
 
-    always_comb begin
-        case (ALU_Code)
-            ALU_CODE_ADD:  Result = add_result;
-            ALU_CODE_SUB:  Result = sub_result;
-            ALU_CODE_SLL:  Result = shift_result;
-            ALU_CODE_SRL:  Result = shift_result;
-            ALU_CODE_SRA:  Result = shift_result;
-            ALU_CODE_SLT:  Result = slt_result;
-            ALU_CODE_SLTU: Result = sltu_result;
-            ALU_CODE_AND:  Result = logic_result;
-            ALU_CODE_OR:   Result = logic_result;
-            ALU_CODE_XOR:  Result = logic_result;
-            
-            // LUI
-            ALU_CODE_PASS: Result = B;    // подготовка константы производится в UC модуле       
-            default:       Result = 32'b0;
-        endcase
-    end
 
     assign Zero     = (Result == 32'b0);
     assign Negative = Result[31];
-    
-    always_comb begin
-        case (ALU_Code)
-            ALU_CODE_ADD:  Carry = add_carry;
-            ALU_CODE_SUB:  Carry = sub_carry;
-            ALU_CODE_SLTU: Carry = sub_carry;
-            default:       Carry = 1'b0;
-        endcase
-    end
-    
-    always_comb begin
-        case (ALU_Code)
-            ALU_CODE_ADD: Overflow = add_overflow;
-            ALU_CODE_SUB: Overflow = sub_overflow;
-            ALU_CODE_SLT: Overflow = sub_overflow;
-            default:      Overflow = 1'b0;
-        endcase
-    end
+
+    assign Carry    = (ALU_Code == ALU_CODE_ADD)  ? add_carry :
+                      (ALU_Code == ALU_CODE_SUB)  ? sub_carry :
+                      (ALU_Code == ALU_CODE_SLTU) ? sub_carry : 1'b0;
+
+    assign Overflow = (ALU_Code == ALU_CODE_ADD)  ? add_overflow :
+                      (ALU_Code == ALU_CODE_SUB)  ? sub_overflow :
+                      (ALU_Code == ALU_CODE_SLT)  ? sub_overflow : 1'b0;
 
 endmodule

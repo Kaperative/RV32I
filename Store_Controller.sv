@@ -1,67 +1,33 @@
-// переписать под assign блоки
-// как-то вынести funct3 отсюда и передавать только управляющий сигнал от UC
-
 import OFA_pkg::*;
 module Store_Controller (
     input  logic [31:0] Address,
     input  logic [31:0] WriteDataRaw,
-    input  logic [2:0]  funct3, // ---
+    input  logic [2:0]  funct3, 
     input  logic        MemWrite,
     
     output logic [31:0] WriteData,
     output logic [3:0]  WriteMask 
 );
 
-    always_comb begin
-        if (MemWrite) begin
-            case (funct3)
-                
-                FUNCT3_S_SB: begin
-                    case (Address[1:0])
-                        2'b00: begin
-                            WriteMask = 4'b0001;
-                            WriteData = {24'b0, WriteDataRaw[7:0]};
-                        end
-                        2'b01: begin
-                            WriteMask = 4'b0010;
-                            WriteData = {16'b0, WriteDataRaw[7:0], 8'b0};
-                        end
-                        2'b10: begin
-                            WriteMask = 4'b0100;
-                            WriteData = {8'b0, WriteDataRaw[7:0], 16'b0};
-                        end
-                        2'b11: begin
-                            WriteMask = 4'b1000;
-                            WriteData = {WriteDataRaw[7:0], 24'b0};
-                        end
-                    endcase
-                end
-                // либо первый байт либо полуслово протеститровать
-             
-                FUNCT3_S_SH: begin
-                    if (Address[1]) begin
-                        WriteMask = 4'b1100;
-                        WriteData = {WriteDataRaw[15:0], 16'b0};
-                    end else begin
-                        WriteMask = 4'b0011;
-                        WriteData = {16'b0, WriteDataRaw[15:0]};
-                    end
-                end
-          
-                FUNCT3_S_SW: begin
-                    WriteMask = 4'b1111;
-                    WriteData = WriteDataRaw;
-                end
-                
-                default: begin
-                    WriteMask = 4'b0000;
-                    WriteData = 32'b0;
-                end
-            endcase
-        end else begin
-            WriteMask = 4'b0000;
-            WriteData = 32'b0;
-        end
-    end
+    logic [3:0]  sb_mask;
+    logic [31:0] sb_data;
+    
+    assign sb_mask = (4'b0001 << Address[1:0]);
+    assign sb_data = {4{WriteDataRaw[7:0]}};
+
+    logic [3:0]  sh_mask;
+    logic [31:0] sh_data;
+    
+    assign sh_mask = Address[1] ? 4'b1100 : 4'b0011;
+    assign sh_data = Address[1] ? {WriteDataRaw[15:0], 16'b0} : {16'b0, WriteDataRaw[15:0]};
+
+    assign WriteMask = (!MemWrite)             ? 4'b0000 :
+                       (funct3 == FUNCT3_S_SB) ? sb_mask :
+                       (funct3 == FUNCT3_S_SH) ? sh_mask :
+                       (funct3 == FUNCT3_S_SW) ? 4'b1111 : 4'b0000;
+
+    assign WriteData = (funct3 == FUNCT3_S_SB) ? sb_data :
+                       (funct3 == FUNCT3_S_SH) ? sh_data :
+                       (funct3 == FUNCT3_S_SW) ? WriteDataRaw : 32'b0;
 
 endmodule
