@@ -37,7 +37,7 @@ module Data_Memory #(
 initial begin
 
 
-    $readmemh("init/data_mem/data_mem.hex", mem);
+    $readmemh("./init/data_mem/data_mem.hex", mem);
     $display("Data Memory loaded:");
     for (int i = 0; i < 4; i++) begin
         $display("  mem[%0d] = 0x%h", i, mem[i]);
