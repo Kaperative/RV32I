@@ -20,11 +20,10 @@ module Branch_Controller (
 
     assign condition_met = (funct3 == FUNCT3_B_BEQ)  ? Zero :
                            (funct3 == FUNCT3_B_BNE)  ? ~Zero :
-                           (funct3 == FUNCT3_B_BLT)  ? less_than_signed :
-                           (funct3 == FUNCT3_B_BGE)  ? ~less_than_signed :
-                           (funct3 == FUNCT3_B_BLTU) ? less_than_unsigned :
-                           (funct3 == FUNCT3_B_BGEU) ? ~less_than_unsigned :
-                                                       1'b0;
+                           (funct3 == FUNCT3_B_BLT) |   
+                                        (funct3 == FUNCT3_B_BLTU)  ?  less_than_signed :
+                           (funct3 == FUNCT3_B_BGE) |   
+                                        (funct3 == FUNCT3_B_BGEU)  ? ~less_than_signed : 1'b0;
 
     assign BranchTaken = Branch & condition_met;
 
