@@ -12,15 +12,20 @@ module ALU (
     output logic        Overflow
 );
 
-    logic [31:0] add_result, sub_result;
-    logic        add_carry, sub_carry;
-    logic        add_overflow, sub_overflow;
+    logic        SmuxB;
+    logic [31:0] muxB;
+    logic [31:0] add_sub_result;
+    logic        add_sub_carry;
 
-    assign {add_carry, add_result} = {1'b0, A} + {1'b0, B};
-    assign {sub_carry, sub_result} = {1'b0, A} + {1'b0, ~B} + 1'b1;
+    // CH-01 
+    assign SmuxB =  (ALU_Code == ALU_CODE_SUB) |
+                    (ALU_Code == ALU_CODE_SLT) |
+                    (ALU_Code == ALU_CODE_SLTU);
     
-    assign add_overflow = (A[31] == B[31]) && (add_result[31] != A[31]);
-    assign sub_overflow = (A[31] == ~B[31]) && (sub_result[31] != A[31]);
+    assign muxB = B ^ {32{SmuxB}};
+
+
+    assign {add_sub_carry,add_sub_result} = {1'b0, A} + {1'b0, muxB} + SmuxB;
 
     logic [31:0] sll_res, srl_res, sra_res;
     assign sll_res = A << B[4:0];
@@ -31,11 +36,12 @@ module ALU (
     assign and_res  = A & B;
     assign or_res   = A | B;
     assign xor_res  = A ^ B;
-    assign slt_res  = {31'b0, sub_result[31] ^ sub_overflow};
-    assign sltu_res = {31'b0, ~sub_carry};
 
-    assign Result = (ALU_Code == ALU_CODE_ADD)  ? add_result :
-                    (ALU_Code == ALU_CODE_SUB)  ? sub_result :
+    assign slt_res = {31'b0, add_sub_result[31] ^ Overflow};
+    assign sltu_res = {31'b0, ~add_sub_carry};
+  
+    assign Result = (ALU_Code == ALU_CODE_ADD)  ? add_sub_result :
+                    (ALU_Code == ALU_CODE_SUB)  ? add_sub_result :
                     (ALU_Code == ALU_CODE_SLL)  ? sll_res    :
                     (ALU_Code == ALU_CODE_SRL)  ? srl_res    :
                     (ALU_Code == ALU_CODE_SRA)  ? sra_res    :
@@ -50,12 +56,8 @@ module ALU (
     assign Zero     = (Result == 32'b0);
     assign Negative = Result[31];
 
-    assign Carry    = (ALU_Code == ALU_CODE_ADD)  ? add_carry :
-                      (ALU_Code == ALU_CODE_SUB)  ? sub_carry :
-                      (ALU_Code == ALU_CODE_SLTU) ? sub_carry : 1'b0;
-
-    assign Overflow = (ALU_Code == ALU_CODE_ADD)  ? add_overflow :
-                      (ALU_Code == ALU_CODE_SUB)  ? sub_overflow :
-                      (ALU_Code == ALU_CODE_SLT)  ? sub_overflow : 1'b0;
+    assign Carry    = add_sub_carry;
+    
+    assign Overflow = (A[31] == muxB[31]) && (add_sub_result[31] != A[31]);
 
 endmodule
