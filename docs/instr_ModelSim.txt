@@ -1,0 +1,37 @@
+Запуск симуляции (ModelSim/QuestaSim)
+Откройте ModelSim.
+
+В консоли перейдите в папку проекта: 	cd <путь_к_репозиторию>/sim
+Выполните скрипт: 			do run_sim.do
+
+## СКРИПТ 
+
+set PROJ_DIR ".."
+if [file exists work] {
+    vdel -all
+}
+vlib work
+vlog -sv $PROJ_DIR/pkg/OFA.sv
+
+vlog -sv $PROJ_DIR/rtl/ALU.sv
+vlog -sv $PROJ_DIR/rtl/RegFile.sv
+vlog -sv $PROJ_DIR/rtl/PC.sv
+vlog -sv $PROJ_DIR/rtl/PC_Controller.sv
+vlog -sv $PROJ_DIR/rtl/PC_Plus4.sv
+vlog -sv $PROJ_DIR/rtl/Branch_Controller.sv
+vlog -sv $PROJ_DIR/rtl/Load_Controller.sv
+vlog -sv $PROJ_DIR/rtl/Store_Controller.sv
+vlog -sv $PROJ_DIR/rtl/Instruction_Memory.sv
+vlog -sv $PROJ_DIR/rtl/Data_Memory.sv
+
+vlog -sv $PROJ_DIR/rtl/Unit_Controller.sv
+vlog -sv $PROJ_DIR/rtl/RV32I.sv
+
+vlog -sv $PROJ_DIR/tb/RV32I_TB.sv
+vsim -voptargs="+acc" work.RV32I_tb
+
+add wave -position end sim:/RV32I_tb/u_rv32i/*
+
+
+# Запуск на выполнение
+run -all
