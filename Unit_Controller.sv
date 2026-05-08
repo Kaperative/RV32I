@@ -19,12 +19,14 @@ module Unit_Controller(
    output logic[4:0] rs1,
    output logic[4:0] rs2,
 
-   output logic[2:0]     funct3,
-   output logic[6:0]     funct7, 
+   output logic[2:0] funct3,
+   output logic[6:0] funct7, 
 
-   // IMM_GEN
-   output  logic[31:0]   Immediate,
-   output  logic[3:0]    ALU_code 
+   output logic[1:0]    Mask_code,
+   output logic         ReadUnsigned,
+
+   output logic[31:0]   Immediate,
+   output logic[3:0]    ALU_code 
 );
 
 logic[6:0] opcode;
@@ -179,5 +181,8 @@ logic          ALU_SLL ,ALU_SRL, ALU_SRA, ALU_PASS, ALU_NOP;
                         ALU_SRA  ? ALU_CODE_SRA  :
                         ALU_PASS ? ALU_CODE_PASS : 
                         ALU_CODE_NOP;
-           
+
+   assign Mask_code     =  (funct3[1]) ? MASK_CODE_WORD:
+                           (funct3[0]) ? MASK_CODE_HALF: MASK_CODE_BYTE;
+   assign ReadUnsigned  =  funct3[2]; 
 endmodule

@@ -22,7 +22,12 @@ module RV32I(
     logic        reg_write, alu_src_a, alu_src_b, mem_read, mem_write;
     logic        branch, jump, jump_reg, branch_taken;
     logic [3:0]  mem_write_mask;
-    logic alu_zero, alu_negative, alu_overflow;
+    logic        alu_zero, alu_negative, alu_overflow;
+
+    logic [31:0] MemAdress;
+    logic [1:0]  Mask_code;
+    logic [3:0]  Mask;
+    logic        ReadUnsigned;
     
     Instruction_Memory u_imem (
         .address     (pc),
@@ -32,11 +37,21 @@ module RV32I(
 
     Unit_Controller u_unit_ctrl (
         .Instruction (instruction),
-        .rd(rd), .rs1(rs1), .rs2(rs2),
-        .funct3      (funct3), .funct7(funct7),
-        .Jump        (jump), .JumpReg(jump_reg), .Branch(branch),
-        .src_ALU_A     (alu_src_a), .src_ALU_B(alu_src_b),
-        .W_mem    (mem_write), .R_mem(mem_read), .W_reg(reg_write),
+        .rd          (rd), 
+        .rs1         (rs1), 
+        .rs2         (rs2),
+        .funct3      (funct3), 
+        .funct7      (funct7),
+        .Mask_code   (Mask_code),
+        .ReadUnsigned(ReadUnsigned),
+        .Jump        (jump), 
+        .JumpReg     (jump_reg), 
+        .Branch      (branch),
+        .src_ALU_A   (alu_src_a), 
+        .src_ALU_B   (alu_src_b),
+        .W_mem       (mem_write), 
+        .R_mem       (mem_read), 
+        .W_reg       (reg_write),
         .src_W_Data_reg    (mem_to_reg),
         .Immediate   (immediate),
         .ALU_code    (alu_code)
@@ -77,30 +92,32 @@ module RV32I(
         .BranchTaken (branch_taken)
     );
 
-    Store_Controller u_store (
-        .Address      (alu_result),
+    Mem_Controller u_Mem_Ctrl (
+        .AddressRaw   (alu_result),
         .WriteDataRaw (rd2),
-        .funct3       (funct3),
-        .MemWrite     (mem_write),
-        .WriteData    (mem_write_data),
-        .WriteMask    (mem_write_mask)
+        .Mask_code    (Mask_code),
+
+        .Address      (MemAdress),
+        .Mask         (mask),
+        .WriteData    (mem_write_data)
+        
     );
 
-    Data_Memory u_dmem (
+ Data_Memory u_dmem (
         .clk       (clk),
-        .MemRead   (mem_read),
         .MemWrite  (mem_write),
-        .WriteMask (mem_write_mask),
-        .Address   (alu_result),
+        .WriteMask (Mask),              
+        .Address   (MemAdress),        
         .WriteData (mem_write_data),
         .ReadData  (mem_read_data)
     );
 
     Load_Controller u_load (
-        .Address     (alu_result),
-        .ReadDataRaw (mem_read_data),
-        .funct3      (funct3),
-        .ReadData    (load_result)
+        .Mask         (Mask),          
+        .ReadDataRaw  (mem_read_data),
+        .isUnsigned   (ReadUnsigned),   
+        .Mask_code    (Mask_code),
+        .ReadData     (load_result)
     );
 
     always_comb begin

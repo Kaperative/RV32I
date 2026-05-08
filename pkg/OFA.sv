@@ -83,5 +83,15 @@ package OFA_pkg;
     localparam ALU_CODE_SRA	  =  4'b1001;
     localparam ALU_CODE_PASS  =  4'b1010;
     localparam ALU_CODE_NOP   =  4'b1111;
+
+// MEMORY MASK CODE
+    localparam MASK_CODE_BYTE = 2'b00;
+    localparam MASK_CODE_HALF = 2'b01;
+    localparam MASK_CODE_WORD = 2'b10;
+// MEMORY MASK
+    localparam MASK_VALUE_BYTE = 4'b0001;
+    localparam MASK_VALUE_HALF = 4'b0011;
+    localparam MASK_VALUE_WORD = 4'b1111;
+    localparam MASK_VALUE_ERR  = 4'b0000;
   
 endpackage

@@ -1,37 +1,37 @@
 import OFA_pkg::*;
 
 module Load_Controller (
-    input  logic [31:0] Address,
-    input  logic [31:0] ReadDataRaw, 
-    input  logic [2:0]  funct3, 
-    
-    output logic [31:0] ReadData   
+    input  logic [3:0]  Mask,           
+    input  logic [31:0] ReadDataRaw,  
+    input  logic        isUnsigned,    
+    input  logic [1:0]  Mask_code, 
+
+    output logic [31:0] ReadData 
 );
 
-    logic [7:0]  selected_byte;
-    logic [15:0] selected_half;
+    logic [31:0] shifted_data;
 
-    logic        isUnsigned;
-    logic        isLW;
-    logic        isLHx;
+    logic [7:0]  final_byte;
+    logic [15:0] final_half;
+
+    logic [23:0]  extension_byte;
+    logic [15:0]  extension_half;
+
+    assign shifted_data = Mask[0] ? (ReadDataRaw )      :
+                          Mask[1] ? (ReadDataRaw >> 8)  :
+                          Mask[2] ? (ReadDataRaw >> 16) :
+                          Mask[3] ? (ReadDataRaw >> 24) :
+                                     ReadDataRaw;
+
+    assign final_byte = shifted_data[7:0];
+    assign final_half = shifted_data[15:0];
+    
+    assign extension_byte = isUnsigned ? 24'b0: {24{final_byte[7]}};
+    assign extension_half = isUnsigned ? 16'b0: {16{final_half[15]}};
+
+    assign ReadData       = (Mask_code == MASK_CODE_BYTE) ? {extension_byte, final_byte}:
+                            (Mask_code == MASK_CODE_HALF) ? {extension_half, final_half}:
+                            (Mask_code == MASK_CODE_WORD) ?  ReadDataRaw        :  32'b0;   
 
 
-
-
-    assign selected_byte = (Address[1:0] == 2'b00) ? ReadDataRaw[7:0]   :
-                           (Address[1:0] == 2'b01) ? ReadDataRaw[15:8]  :
-                           (Address[1:0] == 2'b10) ? ReadDataRaw[23:16] : ReadDataRaw[31:24];
-
-    assign selected_half =  Address[1] ? ReadDataRaw[31:16] : ReadDataRaw[15:0];
-
-    assign isUnsigned = funct3[2];
-    assign isLW       = funct3[1];
-    assign isLHx      = funct3[0];
-
-    assign ReadData = (isLW)                   ?    ReadDataRaw                             :
-                      (isLHx & !isUnsigned)    ? { {16{selected_half[15]}}, selected_half } :
-                      (isLHx &  isUnsigned)    ? {  16'b0, selected_half }                  :                               
-                      (!isUnsigned)            ? { {24{selected_byte[7]}}, selected_byte }  : 
-                      (isUnsigned)             ? {  24'b0, selected_byte }                  :   32'b0;
-                                                                                       
 endmodule

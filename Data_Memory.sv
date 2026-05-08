@@ -4,27 +4,23 @@ module Data_Memory #(
     parameter ADDR_WIDTH = 32
 )(
     input  logic        clk,
-    input  logic        MemRead,
     input  logic        MemWrite,
+
     input  logic [3:0]  WriteMask,       
     input  logic [31:0] Address,
     input  logic [31:0] WriteData,
+
     output logic [31:0] ReadData
 );
    
     logic [31:0] mem [0:SIZE-1];
-    
-
-    logic [31:0] word_addr ;
     logic [9:0]  index;
+    logic [31:0] raw_data_out;
 
-    assign word_addr = Address >> 2;
-    assign index     = word_addr[9:0];
 
-    always_comb begin
-        ReadData = mem[index];
-    end
-    
+    assign index = Address[9:0];
+    assign ReadData = mem[index];
+        
     always_ff @(posedge clk) begin
         if (MemWrite) begin
             if (WriteMask[0]) mem[index][7:0]   <= WriteData[7:0];
