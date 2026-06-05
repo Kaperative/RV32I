@@ -22,7 +22,7 @@ module Load_Controller (
                            Mask[1] ? (ReadDataRaw >> 8)  :
                            Mask[2] ? (ReadDataRaw >> 16) :
                            Mask[3] ? (ReadDataRaw >> 24) :
-                                     ReadDataRaw;
+                                      ReadDataRaw;
 
     assign final_byte     = shifted_data[7:0];
     assign final_half     = shifted_data[15:0];
@@ -34,6 +34,5 @@ module Load_Controller (
                             (Mask_code == MASK_CODE_HALF) ? {extension_half, final_half}:
                             (Mask_code == MASK_CODE_WORD) ?  ReadDataRaw:  
                             32'b0;   
-
 
 endmodule

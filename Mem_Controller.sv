@@ -18,12 +18,12 @@ module Mem_Controller (
 
     assign  {WRMask_default, OffsetMask, WriteData } =   
                         ( Mask_code == MASK_CODE_BYTE)  ?    
-                            {{ MASK_VALUE_BYTE},  { AddressRaw[1:0]}, { 4{WriteDataRaw[7:0]}}}:
-                        ( Mask_code == MASK_CODE_HALF)  ?    
-                            {{MASK_VALUE_HALF},   {{ AddressRaw[1]}, {1'b0}}, {2{WriteDataRaw[15:0]}}}:
-                        ( Mask_code == MASK_CODE_WORD)  ?    
-                            {{MASK_VALUE_WORD},  {2'b0}, {WriteDataRaw}}:
-                        {{MASK_VALUE_ERR},   {2'b0}, {WriteDataRaw}};
+                            {{ MASK_VALUE_BYTE },  { AddressRaw[1:0] }, {4{WriteDataRaw[7:0]}} }:
+                        ( Mask_code == MASK_CODE_HALF )  ?    
+                            {{ MASK_VALUE_HALF },   { { AddressRaw[1] }, { 1'b0 } }, { 2{WriteDataRaw[15:0]}} }:
+                        ( Mask_code == MASK_CODE_WORD )  ?    
+                            {{ MASK_VALUE_WORD },  { 2'b0 }, {WriteDataRaw}}:
+                        {{ MASK_VALUE_ERR },       { 2'b0 }, {WriteDataRaw}};
 
     assign  Mask    =   WRMask_default << OffsetMask;  
     assign  Address =   AddressRaw     >> 2;                               

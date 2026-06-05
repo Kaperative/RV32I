@@ -1,6 +1,6 @@
 
 module Data_Memory #(
-    parameter SIZE = 1024,             
+    parameter SIZE       = 1024,             
     parameter ADDR_WIDTH = 32
 )(
     input  logic        clk,
@@ -18,7 +18,7 @@ module Data_Memory #(
     logic [31:0] raw_data_out;
 
 
-    assign index = Address[9:0];
+    assign index    = Address[9:0];
     assign ReadData = mem[index];
         
     always_ff @(posedge clk) begin
@@ -31,12 +31,11 @@ module Data_Memory #(
     end
 
 initial begin
-
-
     $readmemh("./init/data_mem/data_mem.hex", mem);
     $display("Data Memory loaded:");
     for (int i = 0; i < 4; i++) begin
         $display("  mem[%0d] = 0x%h", i, mem[i]);
     end
 end
+
 endmodule

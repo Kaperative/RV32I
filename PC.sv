@@ -9,12 +9,10 @@ output logic [WIDTH-1:0] pc_out
 
 always_ff @(posedge clk or negedge rst_n )
 begin 
-    if (!rst_n) begin
+    if (!rst_n)
         pc_out <= '0;
-    end
-    else if (pc_en) begin
+    else if (pc_en)
         pc_out <= pc_next;
-    end
 end
 
 endmodule

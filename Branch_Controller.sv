@@ -15,16 +15,16 @@ module Branch_Controller (
     logic less_than_unsigned;
     logic condition_met;
 
-    assign less_than_signed = Negative ^ Overflow;
+    assign less_than_signed   =  Negative ^ Overflow;
     assign less_than_unsigned = ~Carry;
 
-    assign condition_met = (funct3 == FUNCT3_B_BEQ)  ? Zero :
-                           (funct3 == FUNCT3_B_BNE)  ? ~Zero :
-                           (funct3 == FUNCT3_B_BLT) |   
-                                        (funct3 == FUNCT3_B_BLTU)  ?  less_than_signed :
-                           (funct3 == FUNCT3_B_BGE) |   
-                                        (funct3 == FUNCT3_B_BGEU)  ? ~less_than_signed : 1'b0;
+    assign condition_met      = (funct3 == FUNCT3_B_BEQ)  ? Zero :
+                                (funct3 == FUNCT3_B_BNE)  ? ~Zero :
+                                (funct3 == FUNCT3_B_BLT) |   
+                                    (funct3 == FUNCT3_B_BLTU)  ?  less_than_signed :
+                                (funct3 == FUNCT3_B_BGE) |   
+                                    (funct3 == FUNCT3_B_BGEU)  ? ~less_than_signed : 1'b0;
 
-    assign BranchTaken = Branch & condition_met;
+    assign BranchTaken        = Branch & condition_met;
 
 endmodule

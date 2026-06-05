@@ -19,9 +19,8 @@ assign R_Data_1 = (R_Addr_1 == 5'b0) ? 32'b0 : Reg_File[R_Addr_1];
     
 always_ff @(posedge clk)    
 begin
-    if (W_EN && W_Addr != 5'b0) begin
+    if (W_EN && W_Addr != 5'b0) 
         Reg_File[W_Addr] <= W_Data;
-    end
 end
 
 endmodule
