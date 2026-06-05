@@ -7,16 +7,20 @@ module PC_Controller (
     input  logic [31:0]  JumpPointer,   
     input  logic [31:0]  PC,            
     input  logic [31:0]  Immediate,  
-    input  logic [31:0]  PC_Plus_4,
     
-    output logic [31:0]  PC_next
+    output logic [31:0]  PC_next,
+    output logic [31:0]  PC_plus_4
 );
+    logic [31:0]         PC_plus;    
+    logic [31:0]         PC_target;  
 
-    logic [31:0] PC_target;  
+    assign PC_plus   = PC + 4;
     assign PC_target = PC + Immediate;
-
-    assign PC_next = (JumpReg)     ? JumpPointer :
-                     (Jump)        ? PC_target   :
-                     (BranchTaken) ? PC_target   : PC_Plus_4;
+  
+    assign PC_next   = (JumpReg)     ? JumpPointer :
+                       (Jump)        ? PC_target   :
+                       (BranchTaken) ? PC_target   : PC_plus;
+                       
+    assign PC_plus_4 = PC_plus;
 
 endmodule

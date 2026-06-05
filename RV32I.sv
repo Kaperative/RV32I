@@ -57,6 +57,18 @@ module RV32I(
         .ALU_code    (alu_code)
     );
 
+    PC_Controller u_pc_ctrl (
+        .Jump        (jump),
+        .JumpReg     (jump_reg),
+        .BranchTaken (branch_taken),
+        .JumpPointer ({alu_result[31:1], 1'b0}),
+        .PC          (pc),
+        .Immediate   (immediate),
+        // out
+        .PC_plus_4   (pc_plus_4),
+        .PC_next     (pc_next) 
+    );
+
     RegFile u_regfile (
         .clk      (clk),
         .W_EN     (reg_write),
@@ -124,21 +136,11 @@ module RV32I(
         case (mem_to_reg)
             2'b00:   write_data = alu_result;
             2'b01:   write_data = load_result;
-            2'b10:   write_data = pc_plus_4;
+            2'b10:   write_data = pc_plus_4; // from module PC_controller 
             default: write_data = 32'b0;
         endcase
     end
 
-    PC_Controller u_pc_ctrl (
-        .Jump        (jump),
-        .JumpReg     (jump_reg),
-        .BranchTaken (branch_taken),
-        .JumpPointer ({alu_result[31:1], 1'b0}),
-        .PC          (pc),
-        .Immediate   (immediate),
-        .PC_Plus_4   (pc_plus_4),
-        .PC_next     (pc_next)
-    );
 
     PC #(.WIDTH(32)) u_pc (
         .clk    (clk),
@@ -147,12 +149,6 @@ module RV32I(
         .pc_next(pc_next),
         .pc_out (pc)
     );
-
-    PC_Plus4 u_pc_plus4 (
-        .PC_in (pc),
-        .PC_out(pc_plus_4)
-    );
-
  
     assign pc_debug = pc;
     assign instr_debug = instruction;

@@ -1,7 +1,7 @@
 import OFA_pkg::*;
 
 module Unit_Controller(
-   input   logic[31:0] Instruction, 
+   input  logic[31:0] Instruction, 
 
    output logic Jump,
    output logic JumpReg,
