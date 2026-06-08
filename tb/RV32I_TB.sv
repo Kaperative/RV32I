@@ -20,7 +20,7 @@ module RV32I_tb;
         reset = 1;
         cycle_count = 0;
       
-        #20;
+        #23;
         reset = 0;
         
         #500;

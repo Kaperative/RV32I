@@ -1,4 +1,4 @@
-
+`timescale 1ns / 1ps
 module Data_Memory #(
     parameter SIZE       = 1024,             
     parameter ADDR_WIDTH = 32

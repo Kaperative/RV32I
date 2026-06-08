@@ -1,14 +1,14 @@
+`timescale 1ns / 1ps
 import OFA_pkg::*;
 
 module Mem_Controller (
 
     input  logic [31:0] AddressRaw,
     input  logic [31:0] WriteDataRaw,
- 
     input  logic [1:0]  Mask_code, 
 
-    output logic [31:0] Address,
     output logic [3:0]  Mask,
+    output logic [31:0] Address,
     output logic [31:0] WriteData 
 
     );

@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module RegFile (
     input  logic       clk,
     input  logic       W_EN,

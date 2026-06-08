@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 import OFA_pkg::*;
 
 module Load_Controller (

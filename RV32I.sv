@@ -1,5 +1,6 @@
 import OFA_pkg::*;
-
+(* keep_hierarchy = "yes" *)
+(* dont_touch = "yes" *)
 module RV32I(
     input  logic        clk,
     input  logic        reset,
@@ -22,7 +23,7 @@ module RV32I(
     logic        reg_write, alu_src_a, alu_src_b, mem_read, mem_write;
     logic        branch, jump, jump_reg, branch_taken;
     logic [3:0]  mem_write_mask;
-    logic        alu_zero, alu_negative, alu_overflow;
+    logic        alu_zero, alu_negative, alu_overflow, alu_carry;
 
     logic [31:0] MemAdress;
     logic [1:0]  Mask_code;
@@ -112,9 +113,8 @@ module RV32I(
         .Mask_code          (Mask_code),
 
         .Address            (MemAdress),
-        .Mask               (mask),
+        .Mask               (Mask),
         .WriteData          (mem_write_data)
-        
     );
 
  Data_Memory u_dmem (
@@ -147,8 +147,8 @@ module RV32I(
     PC #(.WIDTH(32)) u_pc (
         .clk                (clk),
         .rst_n              (~reset),
-        .pc_en              (1'b1),
         .pc_next            (pc_next),
+        
         .pc_out             (pc)
     );
  

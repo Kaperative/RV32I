@@ -2,10 +2,10 @@
 
 Откройте ModelSim.
 
-В консоли перейдите в папку проекта: 	cd <путь_к_репозиторию>
+В консоли перейдите в папку проекта: 	cd C:\\Users\\user\\Desktop\\rv32i_git\\RV32I
 
 Выполните скрипт: 
-
+cd C:\\Users\\user\\Desktop\\rv32i_git\\RV32I
 quit -sim
 if [file exists work] {
     vdel -all

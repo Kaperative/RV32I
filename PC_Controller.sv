@@ -17,9 +17,18 @@ module PC_Controller (
     assign PC_plus   = PC + 4;
     assign PC_target = PC + Immediate;
   
-    assign PC_next   = (JumpReg)     ? JumpPointer :
-                       (Jump)        ? PC_target   :
-                       (BranchTaken) ? PC_target   : PC_plus;
+     always_comb begin
+       
+        if (JumpReg) begin
+            PC_next = JumpPointer;     
+        end else if (Jump) begin
+            PC_next = PC_target;          
+        end else if (BranchTaken) begin
+            PC_next = PC_target;           
+        end else begin
+            PC_next = PC_plus;       
+        end
+    end
                        
     assign PC_plus_4 = PC_plus;
 
